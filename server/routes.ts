@@ -30,6 +30,16 @@ export async function registerRoutes(
     }
   });
 
+  // Increment project views
+  app.post("/api/projects/:id/view", async (req, res) => {
+    try {
+      await storage.incrementProjectViews(req.params.id);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to track view" });
+    }
+  });
+
   // Create new project
   app.post("/api/projects", async (req, res) => {
     try {

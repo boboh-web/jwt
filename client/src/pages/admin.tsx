@@ -8,9 +8,9 @@ import {
   Pencil,
   Trash2,
   ExternalLink,
-  X,
   ImagePlus,
   Loader2,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -52,7 +59,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Project, InsertProject } from "@shared/schema";
+import { PROJECT_CATEGORIES, type Project, type InsertProject } from "@shared/schema";
 
 const projectFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -61,6 +68,7 @@ const projectFormSchema = z.object({
   imageUrl: z.string().url("Please enter a valid URL"),
   galleryImages: z.string().optional(),
   techStack: z.string().min(1, "At least one technology is required"),
+  category: z.string().default("Other"),
   liveUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   repoUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   client: z.string().optional(),
@@ -89,6 +97,7 @@ export default function Admin() {
       imageUrl: "",
       galleryImages: "",
       techStack: "",
+      category: "Other",
       liveUrl: "",
       repoUrl: "",
       client: "",
@@ -147,6 +156,7 @@ export default function Admin() {
       imageUrl: "",
       galleryImages: "",
       techStack: "",
+      category: "Other",
       liveUrl: "",
       repoUrl: "",
       client: "",
@@ -165,6 +175,7 @@ export default function Admin() {
       imageUrl: project.imageUrl,
       galleryImages: project.galleryImages?.join(", ") || "",
       techStack: project.techStack.join(", "),
+      category: project.category || "Other",
       liveUrl: project.liveUrl || "",
       repoUrl: project.repoUrl || "",
       client: project.client || "",
@@ -191,6 +202,7 @@ export default function Admin() {
         ? data.galleryImages.split(",").map((s) => s.trim()).filter(Boolean)
         : [],
       techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
+      category: data.category || "Other",
       liveUrl: data.liveUrl || null,
       repoUrl: data.repoUrl || null,
       client: data.client || null,
@@ -234,8 +246,9 @@ export default function Admin() {
                 <TableRow>
                   <TableHead className="w-16">Image</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Tech Stack</TableHead>
-                  <TableHead className="hidden sm:table-cell">Date</TableHead>
+                  <TableHead className="hidden md:table-cell">Category</TableHead>
+                  <TableHead className="hidden lg:table-cell">Tech Stack</TableHead>
+                  <TableHead className="hidden sm:table-cell">Views</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -251,6 +264,11 @@ export default function Admin() {
                     </TableCell>
                     <TableCell className="font-medium">{project.title}</TableCell>
                     <TableCell className="hidden md:table-cell">
+                      <Badge variant="outline" className="text-xs">
+                        {project.category || "Other"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {project.techStack.slice(0, 2).map((tech) => (
                           <Badge key={tech} variant="secondary" className="text-xs">
@@ -264,8 +282,11 @@ export default function Admin() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell text-muted-foreground">
-                      {project.date || "-"}
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Eye className="h-4 w-4" />
+                        <span>{project.views || 0}</span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
@@ -356,6 +377,51 @@ export default function Admin() {
                     </FormItem>
                   )}
                 />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-project-category">
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {PROJECT_CATEGORIES.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="2024"
+                            {...field}
+                            data-testid="input-project-date"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -486,7 +552,7 @@ export default function Admin() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="client"
@@ -516,24 +582,6 @@ export default function Admin() {
                             placeholder="Lead Developer"
                             {...field}
                             data-testid="input-project-role"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="2024"
-                            {...field}
-                            data-testid="input-project-date"
                           />
                         </FormControl>
                         <FormMessage />

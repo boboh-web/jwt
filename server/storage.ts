@@ -1,4 +1,6 @@
-import { type Project, type InsertProject } from "@shared/schema";
+import { type Project, type InsertProject, projects } from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -7,69 +9,51 @@ export interface IStorage {
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: string, project: InsertProject): Promise<Project | undefined>;
   deleteProject(id: string): Promise<boolean>;
+  incrementProjectViews(id: string): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private projects: Map<string, Project>;
-
-  constructor() {
-    this.projects = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getAllProjects(): Promise<Project[]> {
-    return Array.from(this.projects.values());
+    return await db.select().from(projects);
   }
 
   async getProject(id: string): Promise<Project | undefined> {
-    return this.projects.get(id);
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project || undefined;
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = randomUUID();
-    const project: Project = {
-      id,
-      title: insertProject.title,
-      description: insertProject.description,
-      shortDescription: insertProject.shortDescription,
-      imageUrl: insertProject.imageUrl,
-      galleryImages: insertProject.galleryImages || [],
-      techStack: insertProject.techStack || [],
-      liveUrl: insertProject.liveUrl || null,
-      repoUrl: insertProject.repoUrl || null,
-      client: insertProject.client || null,
-      role: insertProject.role || null,
-      date: insertProject.date || null,
-    };
-    this.projects.set(id, project);
+    const [project] = await db
+      .insert(projects)
+      .values({
+        id,
+        ...insertProject,
+      })
+      .returning();
     return project;
   }
 
   async updateProject(id: string, insertProject: InsertProject): Promise<Project | undefined> {
-    const existing = this.projects.get(id);
-    if (!existing) {
-      return undefined;
-    }
-    const updated: Project = {
-      id,
-      title: insertProject.title,
-      description: insertProject.description,
-      shortDescription: insertProject.shortDescription,
-      imageUrl: insertProject.imageUrl,
-      galleryImages: insertProject.galleryImages || [],
-      techStack: insertProject.techStack || [],
-      liveUrl: insertProject.liveUrl || null,
-      repoUrl: insertProject.repoUrl || null,
-      client: insertProject.client || null,
-      role: insertProject.role || null,
-      date: insertProject.date || null,
-    };
-    this.projects.set(id, updated);
-    return updated;
+    const [project] = await db
+      .update(projects)
+      .set(insertProject)
+      .where(eq(projects.id, id))
+      .returning();
+    return project || undefined;
   }
 
   async deleteProject(id: string): Promise<boolean> {
-    return this.projects.delete(id);
+    const result = await db.delete(projects).where(eq(projects.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async incrementProjectViews(id: string): Promise<void> {
+    await db
+      .update(projects)
+      .set({ views: sql`COALESCE(${projects.views}, 0) + 1` })
+      .where(eq(projects.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
