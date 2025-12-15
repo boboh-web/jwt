@@ -1,5 +1,3 @@
-import { pgTable, text, varchar, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const PROJECT_CATEGORIES = [
@@ -15,27 +13,24 @@ export const PROJECT_CATEGORIES = [
 
 export type ProjectCategory = typeof PROJECT_CATEGORIES[number];
 
-export const projects = pgTable("projects", {
-  id: varchar("id", { length: 36 }).primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  shortDescription: text("short_description").notNull(),
-  imageUrl: text("image_url").notNull(),
-  galleryImages: text("gallery_images").array().default([]),
-  techStack: text("tech_stack").array().notNull().default([]),
-  category: text("category").default("Other"),
-  liveUrl: text("live_url"),
-  repoUrl: text("repo_url"),
-  client: text("client"),
-  role: text("role"),
-  date: text("date"),
-  views: integer("views").default(0),
-});
-
-export const insertProjectSchema = createInsertSchema(projects).omit({
-  id: true,
-  views: true,
+export const insertProjectSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  shortDescription: z.string(),
+  imageUrl: z.string(),
+  galleryImages: z.array(z.string()).default([]),
+  techStack: z.array(z.string()).default([]),
+  category: z.string().default("Other"),
+  liveUrl: z.string().optional().nullable(),
+  repoUrl: z.string().optional().nullable(),
+  client: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  date: z.string().optional().nullable(),
 });
 
 export type InsertProject = z.infer<typeof insertProjectSchema>;
-export type Project = typeof projects.$inferSelect;
+
+export interface Project extends InsertProject {
+  id: string;
+  views: number;
+}

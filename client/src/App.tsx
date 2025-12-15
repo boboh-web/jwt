@@ -11,7 +11,9 @@ import ProjectDetail from "@/pages/project-detail";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
+import Auth from "@/pages/auth";
 import NotFound from "@/pages/not-found";
+import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
@@ -20,7 +22,8 @@ function Router() {
       <Route path="/project/:id" component={ProjectDetail} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
-      <Route path="/admin" component={Admin} />
+      <Route path="/auth" component={Auth} />
+      <ProtectedRoute path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

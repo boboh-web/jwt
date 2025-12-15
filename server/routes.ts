@@ -1,12 +1,41 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertProjectSchema } from "@shared/schema";
+import { storage } from "./storage.ts";
+import { insertProjectSchema } from "../shared/schema";
+import passport from "passport";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Auth Middleware
+  const isAuthenticated = (req: any, res: any, next: any) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.status(401).json({ message: "Not authenticated" });
+  };
+
+  // Auth Routes
+  app.post("/api/login", passport.authenticate("local"), (req, res) => {
+    res.json(req.user);
+  });
+
+  app.post("/api/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.sendStatus(200);
+    });
+  });
+
+  app.get("/api/user", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
   // Get all projects
   app.get("/api/projects", async (req, res) => {
     try {
@@ -41,7 +70,7 @@ export async function registerRoutes(
   });
 
   // Create new project
-  app.post("/api/projects", async (req, res) => {
+  app.post("/api/projects", isAuthenticated, async (req, res) => {
     try {
       const parsed = insertProjectSchema.safeParse(req.body);
       if (!parsed.success) {
@@ -55,7 +84,7 @@ export async function registerRoutes(
   });
 
   // Update project
-  app.patch("/api/projects/:id", async (req, res) => {
+  app.patch("/api/projects/:id", isAuthenticated, async (req, res) => {
     try {
       const parsed = insertProjectSchema.safeParse(req.body);
       if (!parsed.success) {
@@ -72,7 +101,7 @@ export async function registerRoutes(
   });
 
   // Delete project
-  app.delete("/api/projects/:id", async (req, res) => {
+  app.delete("/api/projects/:id", isAuthenticated, async (req, res) => {
     try {
       const deleted = await storage.deleteProject(req.params.id);
       if (!deleted) {

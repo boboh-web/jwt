@@ -1,6 +1,5 @@
-import { type Project, type InsertProject, projects } from "@shared/schema";
-import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { type Project, type InsertProject } from "../shared/schema";
+import { supabase } from "./db.ts";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -14,45 +13,58 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async getAllProjects(): Promise<Project[]> {
-    return await db.select().from(projects);
+    const { data, error } = await supabase.from("projects").select("*");
+    if (error) throw error;
+    return data as Project[];
   }
 
   async getProject(id: string): Promise<Project | undefined> {
-    const [project] = await db.select().from(projects).where(eq(projects.id, id));
-    return project || undefined;
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) return undefined;
+    return data as Project;
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = randomUUID();
-    const [project] = await db
-      .insert(projects)
-      .values({
-        id,
-        ...insertProject,
-      })
-      .returning();
-    return project;
+    const { data, error } = await supabase
+      .from("projects")
+      .insert({ id, ...insertProject })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as Project;
   }
 
   async updateProject(id: string, insertProject: InsertProject): Promise<Project | undefined> {
-    const [project] = await db
-      .update(projects)
-      .set(insertProject)
-      .where(eq(projects.id, id))
-      .returning();
-    return project || undefined;
+    const { data, error } = await supabase
+      .from("projects")
+      .update(insertProject)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) return undefined;
+    return data as Project;
   }
 
   async deleteProject(id: string): Promise<boolean> {
-    const result = await db.delete(projects).where(eq(projects.id, id)).returning();
-    return result.length > 0;
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    return !error;
   }
 
   async incrementProjectViews(id: string): Promise<void> {
-    await db
-      .update(projects)
-      .set({ views: sql`COALESCE(${projects.views}, 0) + 1` })
-      .where(eq(projects.id, id));
+    // Note: Supabase doesn't support atomic increment easily via client without RPC.
+    // For now, we'll fetch, increment, and update. Ideally, use an RPC function.
+    const project = await this.getProject(id);
+    if (project) {
+      await this.updateProject(id, { ...project, views: (project.views || 0) + 1 });
+    }
   }
 }
 
