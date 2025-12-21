@@ -35,16 +35,16 @@ export function Footer() {
           </div>
 
           <a
-            href="mailto:hello@portfolio.com"
+            href="mailto:ndohadaviz@gmail.com"
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             data-testid="link-email"
           >
             <Mail className="h-4 w-4" />
-            hello@portfolio.com
+            ndohadaviz@gmail.com
           </a>
 
           <p className="text-sm text-muted-foreground">
-            {new Date().getFullYear()} Portfolio. All rights reserved.
+            {new Date().getFullYear()} Nexus Software Limited {"{NSL}"}. All rights reserved.
           </p>
         </div>
       </div>

@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Settings } from "lucide-react";
+import { Menu, X, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,11 +32,10 @@ export function Navigation() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${isScrolled
           ? "bg-background/80 backdrop-blur-md border-b border-border"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
         <Link href="/">
@@ -42,7 +43,7 @@ export function Navigation() {
             className="text-xl font-bold tracking-tight cursor-pointer"
             data-testid="link-logo"
           >
-            Portfolio
+            Nexus Software Limited {"{NSL}"}
           </span>
         </Link>
 
@@ -51,11 +52,10 @@ export function Navigation() {
             <Link key={link.href} href={link.href}>
               <Button
                 variant="ghost"
-                className={`text-sm font-medium ${
-                  isActive(link.href)
+                className={`text-sm font-medium ${isActive(link.href)
                     ? "text-foreground"
                     : "text-muted-foreground"
-                }`}
+                  }`}
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
                 {link.label}
@@ -77,6 +77,18 @@ export function Navigation() {
               Admin
             </Button>
           </Link>
+          {user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden md:flex items-center gap-2"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -100,11 +112,10 @@ export function Navigation() {
               <Link key={link.href} href={link.href}>
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start text-sm font-medium ${
-                    isActive(link.href)
+                  className={`w-full justify-start text-sm font-medium ${isActive(link.href)
                       ? "text-foreground bg-muted"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   data-testid={`link-nav-mobile-${link.label.toLowerCase()}`}
                 >
@@ -123,6 +134,19 @@ export function Navigation() {
                 Admin
               </Button>
             </Link>
+            {user && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+                onClick={() => {
+                  logoutMutation.mutate();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            )}
           </nav>
         </div>
       )}

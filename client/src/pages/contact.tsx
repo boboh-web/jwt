@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Send, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,7 +25,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function Contact() {
   const { toast } = useToast();
-  
+
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -49,7 +49,7 @@ export default function Contact() {
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Have a project in mind or just want to chat? Feel free to reach out. 
+            Have a project in mind or just want to chat? Feel free to reach out.
             I'm always open to discussing new projects and opportunities.
           </p>
         </div>
@@ -64,11 +64,25 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold mb-1">Email</h3>
                   <a
-                    href="mailto:hello@portfolio.com"
+                    href="mailto:ndohadaviz@gmail.com"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                     data-testid="link-contact-email"
                   >
-                    hello@portfolio.com
+                    ndohadaviz@gmail.com
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+                  <Phone className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Phone</h3>
+                  <a
+                    href="tel:0740879234"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    0740879234
                   </a>
                 </div>
               </div>
