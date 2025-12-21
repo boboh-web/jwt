@@ -44,7 +44,7 @@ export function Footer() {
           </a>
 
           <p className="text-sm text-muted-foreground">
-            {new Date().getFullYear()} Nexus Software Limited {"{NSL}"}. All rights reserved.
+            {new Date().getFullYear()} Nexus Software Limited. All rights reserved.
           </p>
         </div>
       </div>

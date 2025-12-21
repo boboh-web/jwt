@@ -33,18 +33,18 @@ export function Navigation() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${isScrolled
-          ? "bg-background/80 backdrop-blur-md border-b border-border"
-          : "bg-transparent"
+        ? "bg-background/80 backdrop-blur-md border-b border-border"
+        : "bg-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
         <Link href="/">
-          <span
-            className="text-xl font-bold tracking-tight cursor-pointer"
-            data-testid="link-logo"
-          >
-            Nexus Software Limited {"{NSL}"}
-          </span>
+          <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
+            <img src="/nsl-logo.png" alt="NSL Logo" className="h-8 w-auto object-contain" />
+            <span className="text-xl font-bold tracking-tight">
+              Nexus Software Limited
+            </span>
+          </div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -53,8 +53,8 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 className={`text-sm font-medium ${isActive(link.href)
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                  ? "text-foreground"
+                  : "text-muted-foreground"
                   }`}
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
@@ -77,7 +77,7 @@ export function Navigation() {
               Admin
             </Button>
           </Link>
-          {user && (
+          {user ? (
             <Button
               variant="ghost"
               size="sm"
@@ -88,7 +88,7 @@ export function Navigation() {
               <LogOut className="h-4 w-4" />
               Logout
             </Button>
-          )}
+          ) : null}
           <Button
             variant="ghost"
             size="icon"
@@ -113,8 +113,8 @@ export function Navigation() {
                 <Button
                   variant="ghost"
                   className={`w-full justify-start text-sm font-medium ${isActive(link.href)
-                      ? "text-foreground bg-muted"
-                      : "text-muted-foreground"
+                    ? "text-foreground bg-muted"
+                    : "text-muted-foreground"
                     }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   data-testid={`link-nav-mobile-${link.label.toLowerCase()}`}
@@ -134,7 +134,7 @@ export function Navigation() {
                 Admin
               </Button>
             </Link>
-            {user && (
+            {user ? (
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-2 text-destructive hover:text-destructive"
@@ -146,7 +146,7 @@ export function Navigation() {
                 <LogOut className="h-4 w-4" />
                 Logout
               </Button>
-            )}
+            ) : null}
           </nav>
         </div>
       )}
