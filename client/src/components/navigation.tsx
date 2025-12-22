@@ -32,7 +32,7 @@ export function Navigation() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-300 ${isScrolled
         ? "bg-background/80 backdrop-blur-md border-b border-border"
         : "bg-transparent"
         }`}
@@ -63,7 +63,7 @@ export function Navigation() {
               <img
                 src="/nsl-logo.png"
                 alt="NSL Logo"
-                className="h-12 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95 mix-blend-multiply dark:mix-blend-screen"
+                className="h-16 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95 mix-blend-multiply dark:mix-blend-screen"
               />
               <span className="hidden lg:inline-block text-xl font-bold tracking-tight">
                 Nexus Software Limited
