@@ -40,7 +40,11 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
-            <img src="/nsl-logo.png" alt="NSL Logo" className="h-12 w-auto object-contain" />
+            <img
+              src="/nsl-logo.png"
+              alt="NSL Logo"
+              className="h-12 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95"
+            />
             <span className="text-xl font-bold tracking-tight">
               Nexus Software Limited
             </span>
