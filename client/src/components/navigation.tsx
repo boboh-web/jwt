@@ -37,20 +37,8 @@ export function Navigation() {
         : "bg-transparent"
         }`}
     >
-      <div className="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
-        <Link href="/">
-          <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
-            <img
-              src="/nsl-logo.png"
-              alt="NSL Logo"
-              className="h-12 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95"
-            />
-            <span className="text-xl font-bold tracking-tight">
-              Nexus Software Limited
-            </span>
-          </div>
-        </Link>
-
+      <div className="max-w-7xl mx-auto h-full px-4 md:px-6 relative flex items-center justify-between">
+        {/* Left: Navigation Links */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href}>
@@ -68,7 +56,24 @@ export function Navigation() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Center: Logo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
+              <img
+                src="/nsl-logo.png"
+                alt="NSL Logo"
+                className="h-12 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95 mix-blend-multiply dark:mix-blend-screen"
+              />
+              <span className="hidden lg:inline-block text-xl font-bold tracking-tight">
+                Nexus Software Limited
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2 ml-auto">
           <ThemeToggle />
           <Link href="/admin">
             <Button
