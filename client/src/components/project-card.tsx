@@ -33,7 +33,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 <Badge
                   key={tech}
                   variant="secondary"
-                  className="bg-white/20 text-white border-0 text-xs font-mono"
+                  className="text-xs font-mono"
                 >
                   {tech}
                 </Badge>
@@ -41,7 +41,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.techStack.length > 3 && (
                 <Badge
                   variant="secondary"
-                  className="bg-white/20 text-white border-0 text-xs font-mono"
+                  className="text-xs font-mono"
                 >
                   +{project.techStack.length - 3}
                 </Badge>

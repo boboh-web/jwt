@@ -44,9 +44,9 @@ export function Navigation() {
             <Link key={link.href} href={link.href}>
               <Button
                 variant="ghost"
-                className={`text-sm font-medium ${isActive(link.href)
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                className={`text-sm font-medium transition-colors relative ${isActive(link.href)
+                  ? "text-foreground after:content-[''] after:absolute after:-bottom-1 after:left-2 after:right-2 after:h-0.5 after:bg-secondary after:rounded-full"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
@@ -66,7 +66,7 @@ export function Navigation() {
                 className="h-16 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105 hover:opacity-95 mix-blend-multiply dark:mix-blend-screen"
               />
               <span className="hidden lg:inline-block text-xl font-bold tracking-tight">
-                Nexus Software Limited
+                Nexus Software Limited<span className="text-secondary">.</span>
               </span>
             </div>
           </Link>

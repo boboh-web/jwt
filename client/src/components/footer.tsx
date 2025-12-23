@@ -13,6 +13,9 @@ export function Footer() {
     <footer className="py-12 border-t border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex flex-col items-center gap-6">
+          <div className="text-xl font-bold tracking-tight">
+            Nexus Software Limited<span className="text-secondary">.</span>
+          </div>
           <div className="flex items-center gap-2">
             {socialLinks.map((link) => (
               <Button
@@ -20,6 +23,7 @@ export function Footer() {
                 variant="ghost"
                 size="icon"
                 asChild
+                className="hover:text-secondary transition-colors"
                 data-testid={`link-social-${link.label.toLowerCase()}`}
               >
                 <a

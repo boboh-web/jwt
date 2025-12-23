@@ -12,7 +12,7 @@ export default function Home() {
     <div className="min-h-screen pt-20 pb-8">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="mb-8 md:mb-12">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Projects</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Projects<span className="text-secondary">.</span></h1>
           <p className="text-muted-foreground">
             A collection of my recent work and creative projects
           </p>
